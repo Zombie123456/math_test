@@ -25,10 +25,12 @@ SECRET_KEY = '9)di50d6p(@@#olkmrdmd(a(y=m4dwxi&a)v$y_3ma_epbl09o'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
+
+DEFAULT_REQUEST_RATE_LIMIT = '5/minute'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -38,6 +40,21 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+START_APPS = [
+    'account',
+    'loginsvc'
+]
+
+INSTALLED_APPS += START_APPS
+
+THIRD_PARTY_APPS = [
+    'rest_framework',
+    'oauth2_provider',
+    'captcha'
+]
+
+INSTALLED_APPS += THIRD_PARTY_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -68,6 +85,32 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'mathtest.wsgi.application'
+
+
+OAUTH2_PROVIDER = {
+    'SCOPES': {'read': 'Read scope', 'write': 'Write scope'},
+    'ACCESS_TOKEN_EXPIRE_SECONDS': 60 * 60 * 24 * 2,  # 2 day
+    'REFRESH_TOKEN_EXPIRE_SECONDS': 60 * 60 * 24 * 10,  # 10 day
+    'OAUTH_DELETE_EXPIRED': True,
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_PAGINATION_CLASS':
+        'rest_framework.pagination.LimitOffsetPagination',
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
+    'NON_FIELD_ERRORS_KEY': 'error_code'
+}
 
 
 # Database
@@ -118,3 +161,52 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+log_level = 'DEBUG'
+LOGGING = {
+           'version': 1,
+           'disable_existing_loggers': False,
+           'formatters': {
+               'verbose': {
+                   'format': '[%(asctime)s][%(name)s:%(lineno)s][%(levelname)s] %(message)s',
+                   'datefmt': '%Y/%b/%d %H:%M:%S'
+               },
+               'colored': {'()': 'colorlog.ColoredFormatter',
+                           'format': '[%(log_color)s%(asctime)s%(reset)s][%(name)s:%(lineno)s][%(log_color)s%(levelname)s%(reset)s] %(message)s',
+                           'datefmt': '%Y/%b/%d %H:%M:%S',
+                           'log_colors': {'DEBUG': 'cyan',
+                                          'INFO': 'green',
+                                          'WARNING': 'bold_yellow',
+                                          'ERROR': 'red',
+                                          'CRITICAL': 'red,bg_white'},
+                           'secondary_log_colors': {},
+                           'style': '%'},
+           },
+           'handlers': {
+               'console': {
+                   'level': log_level,
+                   'class': 'logging.StreamHandler',
+                   'formatter': 'colored'
+               },
+               'mail_admins': {
+                   'level': 'ERROR',
+                   'class': 'django.utils.log.AdminEmailHandler',
+               },
+           },
+           'loggers': {
+               'django': {
+                   'handlers': ['console'],
+                   'propagate': True,
+               },
+               'django.request': {
+                   'handlers': ['mail_admins'],
+                   'level': 'ERROR',
+               },
+           }
+}
+
+__app_logging = {'handlers': ['console', ],
+                 'level': log_level,
+                 'propagate': True}
+for proj_app in START_APPS:
+    LOGGING.get('loggers').update({proj_app: __app_logging})
