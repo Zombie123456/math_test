@@ -14,8 +14,8 @@ class IsAdmin(permissions.BasePermission):
 
 
 def is_student(user):
-    return user and user.groups.filter(name='member_grp').exists() and \
-                hasattr(user, 'member_user')
+    return user and user.groups.filter(name='student_grp').exists() and \
+                hasattr(user, 'students_user')
 
 
 class IsStudent(permissions.BasePermission):

@@ -15,12 +15,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.conf.urls import url, include
+from mathtest import settings
+from django.views.static import serve
 
 
 urlpatterns = [
     url('admin/', admin.site.urls),
     url(r'^captcha/', include('captcha.urls')),
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+    url(r'^upload/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+
     url(r'^v1/', include('account.urls')),
-    url(r'^v1/', include('loginsvc.urls'))
+    url(r'^v1/', include('loginsvc.urls')),
+    url(r'^v1/', include('question.urls'))
+
 ]

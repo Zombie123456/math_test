@@ -1,6 +1,9 @@
+import os
+from uuid import uuid4
+
 from account.forms import VerificationCodeForm
 from django.http import JsonResponse
-
+from django.utils.deconstruct import deconstructible
 from oauth2_provider.models import AccessToken
 
 
@@ -77,3 +80,19 @@ def get_valid_token(request, try_cookies=False, select_related_user=True):
     if not access_token or access_token.is_expired():
         return None
     return access_token
+
+
+@deconstructible
+class PathAndRename(object):
+
+    def __init__(self, sub_path):
+        self.path = sub_path
+
+    def __call__(self, instance, filename):
+        ext = filename.split('.')[-1]
+
+        # set filename as random string
+        filename = '{}.{}'.format(uuid4().hex, ext)
+
+        # return the whole path to the file
+        return os.path.join(self.path, filename)

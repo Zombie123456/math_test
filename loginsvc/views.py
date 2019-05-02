@@ -102,6 +102,11 @@ def login(request):
             staff.is_logged_in = True
             staff.last_logged_in = timezone.now()
             staff.save()
+        elif user_type == 'student':
+            student = user.students_user
+            student.is_logged_in = True
+            student.last_logged_in = timezone.now()
+            student.save()
 
         response = generate_response(constants.ALL_OK, data=token)
         response.set_cookie(key='access_token',
@@ -187,7 +192,11 @@ def current_user(request):
     user, user_grp = parse_request_for_token(request)
     if not user:
         return Response(data=constants.NOT_OK, status=404)
-    return Response({'username': user.username,
+    if getattr(user, 'students_user', ''):
+        username = user.students_user.student_id.name
+    else:
+        username = user.username
+    return Response({'username': username,
                      'type': get_user_type(user)},
                     status=200)
 

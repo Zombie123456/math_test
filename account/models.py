@@ -10,6 +10,10 @@ STATUS_OPTIONS = (
 
 class StudentIds(models.Model):
     student_id = models.CharField(unique=True, max_length=100)
+    name = models.CharField(max_length=100, null=True, blank=True)
+
+    def __str__(self):
+        return self.name or self.student_id
 
 
 class Students(models.Model):
@@ -31,9 +35,10 @@ class Students(models.Model):
     is_logged_in = models.BooleanField(default=False)
     last_logged_in = models.DateTimeField(null=True, blank=True)
     status = models.IntegerField(default=1, choices=STATUS_OPTIONS)
+    student_id = models.OneToOneField(StudentIds, on_delete=models.PROTECT, null=True, blank=True)
 
-    def __str__(self):
-        return self.username
+    # def __str__(self):
+    #     return self.student_id.name or self.username
 
 
 class StaffPermission(models.Model):

@@ -43,7 +43,8 @@ INSTALLED_APPS = [
 
 START_APPS = [
     'account',
-    'loginsvc'
+    'loginsvc',
+    'question'
 ]
 
 INSTALLED_APPS += START_APPS
@@ -51,7 +52,10 @@ INSTALLED_APPS += START_APPS
 THIRD_PARTY_APPS = [
     'rest_framework',
     'oauth2_provider',
-    'captcha'
+    'captcha',
+    'django_filters',
+    'django_extensions',
+    'django_aliyun_oss2'
 ]
 
 INSTALLED_APPS += THIRD_PARTY_APPS
@@ -148,7 +152,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
@@ -157,10 +161,28 @@ USE_L10N = True
 USE_TZ = True
 
 
+REDIS_HOST = os.environ.get('REDIS_HOST', 'redis')
+REDIS_CACHE_LOCATION = '{}://{}:6379'.format(REDIS_HOST, REDIS_HOST)
+
+CACHES = {
+    'default': {
+        "BACKEND": 'django_redis.cache.RedisCache',
+        'LOCATION': REDIS_CACHE_LOCATION,
+        'TIMEOUT': 259200,
+        'OPTIONS': {
+            'COMPRESSOR': 'django_redis.compressors.zlib.ZlibCompressor',
+            'IGNORE_EXCEPTIONS': True,
+        }
+    },
+}
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
+STATIC_ROOT = 'static'
 STATIC_URL = '/static/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'upload')
+MEDIA_URL = '/upload/'
 
 log_level = 'DEBUG'
 LOGGING = {
@@ -210,3 +232,13 @@ __app_logging = {'handlers': ['console', ],
                  'propagate': True}
 for proj_app in START_APPS:
     LOGGING.get('loggers').update({proj_app: __app_logging})
+
+DEFAULT_FILE_STORAGE = 'django_aliyun_oss2.backends.AliyunMediaStorage'
+STATICFILES_STORAGE = 'django_aliyun_oss2.backends.AliyunStaticStorage'
+
+ACCESS_KEY_ID = 'LTAIb5I3lIEeE8G9'
+ACCESS_KEY_SECRET = '9aEqviBE0CwMU5MOvF2ScIeWGltKoR'
+END_POINT = 'oss-cn-hongkong.aliyuncs.com'
+BUCKET_NAME = 'chalice'
+ALIYUN_OSS_CNAME = ''
+BUCKET_ACL_TYPE = 'public-read'
