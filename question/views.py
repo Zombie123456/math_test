@@ -1,6 +1,7 @@
 from rest_framework import mixins, viewsets
 from rest_framework.response import Response
 from django_filters.utils import timezone
+from itertools import chain
 
 from mathtest.throttling import CustomAnonThrottle
 from question.models import (Question,
@@ -25,22 +26,22 @@ class StudentStartTestViewSet(mixins.ListModelMixin,
     serializer_class = StudentStartTestSerializers
 
     def get_queryset(self):
-        queryset_choose_0 = Question.objects.filter(status=1, question_type=0, level_id=1).\
+        queryset_choose_0 = Question.objects.filter(status=1, question_type=0, level=1).\
                               order_by('?').reverse()[:C_NUMBER - int(C_NUMBER * 0.2)]
-        queryset_choose_1 = Question.objects.filter(status=1, question_type=0, level_id=2).\
+        queryset_choose_1 = Question.objects.filter(status=1, question_type=0, level=2).\
                                 order_by('?').reverse()[:int(C_NUMBER * 0.2)]
 
-        queryset_fill_0 = Question.objects.filter(status=1, question_type=1, level_id=1).\
+        queryset_fill_0 = Question.objects.filter(status=1, question_type=1, level=1).\
                               order_by('?').reverse()[:F_NUMBER - int(F_NUMBER * 0.2)]
-        queryset_fill_1 = Question.objects.filter(status=1, question_type=1, level_id=2).\
+        queryset_fill_1 = Question.objects.filter(status=1, question_type=1, level=2).\
                               order_by('?').reverse()[:int(F_NUMBER * 0.2)]
 
-        queryset_big_0 = Question.objects.filter(status=1, question_type=2, level_id=1).\
+        queryset_big_0 = Question.objects.filter(status=1, question_type=2, level=1).\
                              order_by('?').reverse()[:B_NUMBER - int(B_NUMBER * 0.2)]
-        queryset_big_1 = Question.objects.filter(status=1, question_type=2, level_id=2).\
+        queryset_big_1 = Question.objects.filter(status=1, question_type=2, level=2).\
                              order_by('?').reverse()[:int(B_NUMBER * 0.2)]
-        return (queryset_big_0 | queryset_big_1 | queryset_choose_0 |
-                queryset_choose_1 | queryset_fill_0 | queryset_fill_1).order_by('question_type', 'level')
+        return chain(queryset_big_0, queryset_big_1, queryset_choose_0,
+                     queryset_choose_1, queryset_fill_0, queryset_fill_1)
 
     def list(self, request, *args, **kwargs):
         date_code = self.request.GET.get('datenumber', '')

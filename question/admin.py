@@ -1,5 +1,5 @@
 from django.contrib import admin
-from question.models import StudentQuestion, Question, DifficultOptions, StudentTestInfo, DateNumber
+from question.models import StudentQuestion, Question, StudentTestInfo, DateNumber
 
 
 class StudentQuestionAdmin(admin.ModelAdmin):
@@ -8,10 +8,6 @@ class StudentQuestionAdmin(admin.ModelAdmin):
 
 class QuestionAdmin(admin.ModelAdmin):
     list_dispay = ('id',)
-
-
-class DifficultOptionsAdmin(admin.ModelAdmin):
-    list_display = ('name',)
 
 
 class StudentTestInfoAdmin(admin.ModelAdmin):
@@ -24,6 +20,5 @@ class DateNumberAdmin(admin.ModelAdmin):
 
 admin.site.register(StudentQuestion, StudentQuestionAdmin)
 admin.site.register(Question, QuestionAdmin)
-admin.site.register(DifficultOptions, DifficultOptionsAdmin)
 admin.site.register(StudentTestInfo, StudentTestInfoAdmin)
 admin.site.register(DateNumber, DateNumberAdmin)

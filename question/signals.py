@@ -22,6 +22,6 @@ def transaction_follow_up(sender, instance, created, **kwargs):
         date_time = instance.date_number
 
         if date_time:
-            expired_in_minutes = date_time.time
+            expired_in_minutes = int(date_time.time)
         deal_overdue.apply_async((instance.id,),
                                  eta=localtime() + timedelta(minutes=expired_in_minutes))

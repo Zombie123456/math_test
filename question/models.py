@@ -30,13 +30,10 @@ CORRECT_OPTIONS = (
 )
 
 
-class DifficultOptions(models.Model):
-    name = models.CharField(null=True, blank=True, max_length=100)
-    status = models.IntegerField(default=1, choices=STATUS_OPTIONS)
-    key = models.CharField(max_length=20)
-
-    def __str__(self):
-        return self.name
+LEVEL_OPTIONS = (
+    (1, 'Easy'),
+    (2, 'Difficult')
+)
 
 
 class Question(models.Model):
@@ -46,7 +43,7 @@ class Question(models.Model):
     answer = models.TextField(null=True, blank=True)
     option = models.TextField(null=True, blank=True)
     title_img = models.ImageField(upload_to=PathAndRename('question_img'), null=True, blank=True)
-    level = models.ForeignKey(DifficultOptions, on_delete=models.PROTECT)
+    level = models.IntegerField(default=1, choices=LEVEL_OPTIONS)
     points = models.IntegerField()
 
     def __str__(self):
@@ -56,7 +53,7 @@ class Question(models.Model):
 class DateNumber(models.Model):
     name = models.CharField(max_length=100)
     code = models.CharField(max_length=100, null=True, blank=True)
-    time = models.CharField(max_length=30, null=True, blank=True)
+    time = models.IntegerField()
     status = models.IntegerField(default=1, choices=STATUS_OPTIONS)
 
 
