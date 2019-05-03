@@ -38,13 +38,13 @@ class RegisterStudentSerializer(serializers.ModelSerializer):
         # check username
         username = data.get('username')
         user_check = User.objects.filter(username=username)
-        id_check = StudentIds.objects.filter(student_id=username)
+        id_check = StudentIds.objects.filter(student_id=username).first()
         if user_check or (not id_check):
             raise serializers.ValidationError(
                 {'error': [{'username_field': _('username already exists or username error.')}]}
             )
         validated_data['username'] = username
-
+        validated_data['id_obj'] = id_check
         # check password
         password = data.get('password')
         if not password == data.get('copy_password'):
@@ -64,9 +64,10 @@ class RegisterStudentSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
 
         password = validated_data.pop('password')
-
+        id_obj = validated_data.pop('id_obj')
         student = Students.objects.create(**validated_data)
-
+        student.student_id = id_obj
+        student.save()
         if student:
             user = User.objects.create_user(
                 username=validated_data['username'],
