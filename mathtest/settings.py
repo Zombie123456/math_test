@@ -120,13 +120,24 @@ REST_FRAMEWORK = {
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
+
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'mysql',
+        'USER': 'root',
+        'PASSWORD': 'pass1234',
+        'HOST': 'for_mysql',
+        'PORT': '3306'
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -160,6 +171,31 @@ USE_L10N = True
 
 USE_TZ = True
 
+
+CELERY_RESULT_BACKEND = 'rpc://'
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_ROUTES = {
+    'deal_overdue': {
+        'queue': 'others',
+        'routing_key': 'others'
+    }
+}
+
+CELERYBEAT_SCHEDULE = {
+    'delete_expired_token_every_minute': {
+        'task': 'delete_expired_token',
+        'schedule': 60,
+    }
+}
+
+
+RABBITMQ_DEFAULT_USER = os.environ.get('RABBITMQ_DEFAULT_USER', 'demo')
+RABBITMQ_DEFAULT_PASS = os.environ.get('RABBITMQ_DEFAULT_PASS', 'demo')
+RABBITMQ_DEFAULT_VHOST = os.environ.get('RABBITMQ_DEFAULT_VHOST', 'demo')
+RABBITMQ_HOST = os.environ.get('RABBITMQ_HOST', 'rabbitmq')
+BROKER_URL = (f'amqp://{RABBITMQ_DEFAULT_USER}:{RABBITMQ_DEFAULT_PASS}'
+              f'@{RABBITMQ_HOST}:5672/{RABBITMQ_DEFAULT_VHOST}')
+BROKER_HEARTBEAT = int(os.environ.get('RABBITMQ_HOST', 0))
 
 REDIS_HOST = os.environ.get('REDIS_HOST', 'redis')
 REDIS_CACHE_LOCATION = '{}://{}:6379'.format(REDIS_HOST, REDIS_HOST)
