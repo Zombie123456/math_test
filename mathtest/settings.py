@@ -93,7 +93,7 @@ WSGI_APPLICATION = 'mathtest.wsgi.application'
 
 OAUTH2_PROVIDER = {
     'SCOPES': {'read': 'Read scope', 'write': 'Write scope'},
-    'ACCESS_TOKEN_EXPIRE_SECONDS': 60 * 60 * 24 * 2,  # 2 day
+    'ACCESS_TOKEN_EXPIRE_SECONDS': 60 * 60 * 24,  # 1 day
     'REFRESH_TOKEN_EXPIRE_SECONDS': 60 * 60 * 24 * 10,  # 10 day
     'OAUTH_DELETE_EXPIRED': True,
 }

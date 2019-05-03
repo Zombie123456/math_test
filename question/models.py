@@ -1,7 +1,7 @@
 from django.db import models
 from mathtest.utils import PathAndRename
 from account.models import Students
-from django_filters.utils import timezone
+from django.utils import timezone
 
 
 STATUS_OPTIONS = (
@@ -59,7 +59,7 @@ class DateNumber(models.Model):
 
 class StudentTestInfo(models.Model):
     student = models.ForeignKey(Students, on_delete=models.PROTECT)
-    start_time = models.DateTimeField(default=timezone.now)
+    start_time = models.DateTimeField(default=timezone.localtime(timezone.now()))
     end_time = models.DateTimeField(null=True, blank=True)
     status = models.IntegerField(default=1, choices=STATUS_OPTIONS)
     date_number = models.ForeignKey(DateNumber, on_delete=models.PROTECT,
