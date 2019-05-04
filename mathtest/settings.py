@@ -55,8 +55,13 @@ THIRD_PARTY_APPS = [
     'captcha',
     'django_filters',
     'django_extensions',
-    'django_aliyun_oss2'
+    'django_aliyun_oss2',
+    'corsheaders'
 ]
+
+
+CORS_ORIGIN_ALLOW_ALL = True
+
 
 INSTALLED_APPS += THIRD_PARTY_APPS
 
@@ -68,6 +73,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'mathtest.urls'
