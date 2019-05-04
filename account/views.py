@@ -18,7 +18,7 @@ class RegisterStudentViewSet(mixins.CreateModelMixin,
     serializer_class = RegisterStudentSerializer
     throttle_classes = (CustomAnonThrottle,)
 
-    def create(self, request):
+    def create(self, request, *args, **kwargs):
         ret = super(RegisterStudentViewSet, self).create(request)
 
         if ret.status_code == 201:
@@ -32,7 +32,7 @@ class CaptchaMemberViewSet(mixins.ListModelMixin,
     permission_classes = []
     queryset = []
 
-    def list(self, request):
+    def list(self, request, *args, **kwargs):
         """
             Request captcha code.
         """
@@ -42,7 +42,7 @@ class CaptchaMemberViewSet(mixins.ListModelMixin,
         idx = form_str.find('src="')
         src_list = form_str[idx:].split(' ', 1)
 
-        data = {'captcha_src': src_list[0][5:-2],
+        data = {'captcha_src': request.build_absolute_uri(src_list[0][5:-2]),
                 'captcha_val': src_list[1].split(' ')[5][7:-1]}
 
         return generate_response(constants.ALL_OK, data=data)
